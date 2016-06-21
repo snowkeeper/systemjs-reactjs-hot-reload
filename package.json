@@ -1,0 +1,67 @@
+{
+  "name": "systemjs-reactjs-liveserver",
+  "version": "0.0.1",
+  "description": "systemjs, reactjs, hot reload starter pack",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "start": "DEBUG=epg:* node start.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snowkeeper/systemjs-reactjs-hot-reload.git"
+  },
+  "author": "snowkeeper",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/snowkeeper/systemjs-reactjs-hot-reload/issues"
+  },
+  "homepage": "https://github.com/snowkeeper/systemjs-reactjs-hot-reload#readme",
+  "jspm": {
+    "directories": {
+      "baseURL": "static"
+    },
+    "configFile": "app/config.js",
+    "dependencies": {
+      "classnames": "npm:classnames@^2.2.5",
+      "debug": "npm:debug@^2.2.0",
+      "events": "github:jspm/nodelibs-events@^0.1.1",
+      "fetch": "github:github/fetch@^1.0.0",
+      "fs": "github:jspm/nodelibs-fs@^0.1.2",
+      "history": "npm:history@^3.0.0",
+      "lodash": "npm:lodash@^4.13.1",
+      "material-ui": "npm:material-ui@^0.15.0",
+      "path": "github:jspm/nodelibs-path@^0.1.0",
+      "react": "npm:react@^15.1.0",
+      "react-dom": "npm:react-dom@^15.1.0",
+      "socket.io-client": "npm:socket.io-client@^1.4.6",
+      "socketio/socket.io-client": "github:socketio/socket.io-client@^1.4.6",
+      "superagent": "npm:superagent@^2.0.0",
+      "util": "github:jspm/nodelibs-util@^0.1.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4",
+      "systemjs-hot-reloader": "github:capaj/systemjs-hot-reloader@^0.6.0"
+    }
+  },
+  "dependencies": {
+    "async": "^1.5.2",
+    "body-parser": "^1.15.1",
+    "compression": "^1.6.2",
+    "express": "^4.14.0",
+    "express-less": "0.0.8",
+    "express-session": "^1.13.0",
+    "hat": "0.0.3",
+    "jspm": "^0.16.39",
+    "method-override": "^2.3.6",
+    "moment": "^2.13.0",
+    "morgan": "^1.7.0",
+    "socket.io": "^1.4.6",
+    "superagent": "^2.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3"
+  }
+}
