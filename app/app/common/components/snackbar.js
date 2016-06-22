@@ -1,9 +1,9 @@
 import React from 'react';
-import Snackbar from 'material-ui/lib/snackbar';
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
+import Snackbar from 'material-ui/snackbar';
+import TextField from 'material-ui/text-field';
+import RaisedButton from 'material-ui/raised-button';
 import debugging from 'debug';
-let	debug = debugging('epg:app:common:components:snackbar');
+let	debug = debugging('lodge:app:common:components:snackbar');
 
 class SnackbarExampleSimple extends React.Component {
 

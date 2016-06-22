@@ -1,7 +1,7 @@
 import React from 'react';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
-import RaisedButton from 'material-ui/lib/raised-button';
+import Dialog from 'material-ui/dialog';
+import FlatButton from 'material-ui/flat-button';
+import RaisedButton from 'material-ui/raised-button';
 
 export default class DialogExampleModal extends React.Component {
   constructor(props) {

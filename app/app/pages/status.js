@@ -1,9 +1,10 @@
 import React from 'react';
-import Debug from 'debug'
-import Gab from '../common/gab'
-import { GridList, GridTile, Divider, FontIcon, Styles, CardText, Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui/lib';
+import Debug from 'debug';
+import Gab from '../common/gab';
+import { Styles } from '../common/styles';
+import { GridList, GridTile, Divider, FontIcon, CardText, Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui';
 
-let debug = Debug('simpledocs:app:pages:status');
+let debug = Debug('lodge:app:pages:status');
 		
 export default class Status extends React.Component {
 	constructor(props) {
@@ -34,10 +35,20 @@ export default class Status extends React.Component {
 			let msg = !snowUI.usesockets ? '' : "The server is online and accepting page requests.";
 			status =  (
 				<CardHeader 
-					title={"SimpleDocs document generator"}
+					title={"Welcome to the lodge.  Enjoy your time with us!"}
 					subtitle={msg}
-					avatar={<FontIcon style={{fontSize:'42px'}} className="material-icons" color={Styles.Colors.green600} hoverColor={Styles.Colors.blue600} >cloud_done</FontIcon>}
-					titleColor={Styles.Colors.green600}
+					avatar={<FontIcon style={{fontSize:'42px'}} className="material-icons" color={Styles.Colors.lightBlue700} hoverColor={Styles.Colors.lightBlue500} >speaker_phone</FontIcon>}
+					titleColor={Styles.Colors.lightBlue900}
+					subtitleColor={Styles.Colors.grey500}
+				/>
+			);
+		} else if(this.props.sockets.connected.firstRun) {
+			status = (
+				<CardHeader 
+					title={"Client trying to initate connection"}
+					subtitle={"The client is currently setting up communication with the agent."}
+					avatar={<FontIcon style={{fontSize:'42px'}} className="material-icons" color={Styles.Colors.orangeA700} hoverColor={Styles.Colors.orangeA400} >speaker_phone</FontIcon>}
+					titleColor={Styles.Colors.lightBlue900}
 					subtitleColor={Styles.Colors.grey500}
 				/>
 			);
@@ -53,61 +64,14 @@ export default class Status extends React.Component {
 			);
 		}
 		let ghpages = <span />;
-		if(snowUI.chief) {
-			ghpages = (
-				<Card>
+		
+		return (<div className="col-xs-12" style={{paddingRight:0, paddingLeft:0}}  >
+			<Card style={{paddingRight:0, paddingLeft:0}} >
+				{status}				
+				<Card style={{paddingRight:0, paddingLeft:0}} >
 					<CardHeader 
-						title={"Create Builds"}
-						subtitle={"Create static build for ghpages and download"}
-						avatar={<FontIcon style={{}} className="material-icons" color={Styles.Colors.blueGrey600} hoverColor={Styles.Colors.blueGrey600} >file_download</FontIcon>}
-						titleColor={Styles.Colors.blue600}
-						subtitleColor={Styles.Colors.grey500}
-						actAsExpander={true}
-						showExpandableButton={true}
-					/>
-					<CardText expandable={true} >
-						<GridList
-							cellHeight={100}
-							style={{width:'100%'}}
-							cols={3}
-						>
-							<GridTile 
-								key="GitHub"
-								title="GitHub Pages"
-								onClick={e => this.props.goTo('builds')}
-								subtitle="Build for gh-pages"
-								style={{backgroundColor: '#333335', cursor: 'pointer'}}
-							/>
-							<GridTile 
-								key="pdf"
-								title="PDF"
-								onClick={e => this.props.goTo('builds')}
-								subtitle="Download a PDF"
-								style={{backgroundColor: '#9F4206', cursor: 'pointer'}}
-							/>
-							<GridTile 
-								key="static"
-								title="HTML Download"
-								onClick={e => this.props.goTo('builds')}
-								subtitle="all pages zipped up"
-								style={{backgroundColor: '#23214C', cursor: 'pointer'}}
-							/>
-						</GridList>
-					</CardText>
-				</Card>
-			);
-		}
-		return (<div className="col-xs-12" >
-			<Card>
-				{status}
-				<CardText style={{}} >
-					
-				</CardText>
-				{ghpages}
-				<Card>
-					<CardHeader 
-						title={"Get SimpleDocs"}
-						subtitle={"GitHub and NPM information"}
+						title={"Get systemjs-reactjs-hot-reload"}
+						subtitle={"GitHub"}
 						avatar={<FontIcon style={{}} className="material-icons" color={Styles.Colors.blueGrey600} hoverColor={Styles.Colors.blueGrey600} >file_download</FontIcon>}
 						titleColor={Styles.Colors.blue600}
 						subtitleColor={Styles.Colors.grey500}
@@ -117,18 +81,13 @@ export default class Status extends React.Component {
 					<CardText expandable={true} >
 						<GridList
 							cellHeight={75}
+							cols={1}
 							style={{width:'100%'}}
 						>
 							<GridTile 
-								key="npmTile"
-								title="NPM"
-								subtitle={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="https://npmjs.org/package/simpledocs" target="_blank">Package Info</a>}
-								style={{backgroundColor: '#CB3837'}}
-							/>
-							<GridTile 
 								key="github"
 								title="GitHub"
-								subtitle={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="https://github.com/inquisive/simpledocs" target="_blank">Source</a>}
+								subtitle={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="https://github.com/snowkeeper/systemjs-reactjs-hot-reload" target="_blank">Source</a>}
 								style={{backgroundColor: '#333333'}}
 							/>
 						</GridList>
@@ -145,7 +104,7 @@ export default class Status extends React.Component {
 						showExpandableButton={true}
 					/>
 					<CardText expandable={true} >
-						<h4>A few of the libraries used to build SimpleDocs. </h4> 
+						<h4>libraries</h4> 
 						<GridList
 							cellHeight={75}
 							style={{ width:'100%' }}
@@ -159,7 +118,7 @@ export default class Status extends React.Component {
 							<GridTile 
 								key="mongoTile"
 								title={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="http://mongoosejs.com/" target="_blank">Mongoose & MongoDB</a>}
-								style={{backgroundColor: '#2B4BA7'}}
+								style={{backgroundColor: '#A76D2B'}}
 							/>
 							<GridTile 
 								key="keystoneTime"
@@ -167,9 +126,9 @@ export default class Status extends React.Component {
 								style={{backgroundColor: '#2B4BA7'}}
 							/>
 							<GridTile 
-								key="bootTile"
-								title={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="http://getbootstrap.com/" target="_blank">Bootstrap</a>}
-								style={{backgroundColor: '#2B4BA7'}}
+								key="system"
+								title={<a style={{color: Styles.Colors.grey300, textDecoration: 'none'}} href="https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&cad=rja&uact=8&ved=0ahUKEwjd547O4LnNAhUD64MKHXecCAIQFggeMAA&url=https%3A%2F%2Fgithub.com%2Fsystemjs%2Fsystemjs&usg=AFQjCNEd2Qp35su4CrYsTWnZyZBGWloONg&sig2=cZkcWV4uO_3imicj8gpCsA" target="_blank">SystemJS</a>}
+								style={{backgroundColor: '#DD620E'}}
 							/>
 							<GridTile 
 								key="reactTile"
@@ -198,7 +157,7 @@ export default class Status extends React.Component {
 				<GridList
 					cellHeight={100}
 					style={{width:'100%'}}
-					cols={7}
+					cols={6}
 					padding={0}
 				>
 					<GridTile 
@@ -236,22 +195,6 @@ export default class Status extends React.Component {
 						title={"Dark"}
 						onClick={e => this.props.switchTheme('dark')}
 						style={{backgroundColor: '#0097A7', cursor: 'pointer'}}
-					/>
-					<GridTile 
-						cols={1}
-						key="bliteTheme"
-						title="Bootstrap UI"
-						onClick={e => this.props.appState({
-							newconfirm: {
-								html: 'Do you want to switch to the Bootstrap UI?',
-								title: 'Bootstrap UI',
-								open: true,
-								yesText: 'Yes, go to Bootstrap UI.',
-								noText: 'No, close prompt.',
-								answer: () => { location.href = snowUI.path.bootstrap }
-							}
-						})}
-						style={{backgroundColor: '#0C87C1', cursor: 'pointer'}}
 					/>
 				</GridList>
 			</Card>

@@ -5,22 +5,21 @@ import Gab from './common/gab';
 import Sockets from './lib/sockets';
 import { createHistory, useBasename  } from 'history';
 import Path from 'path';
-import { myStyles, myStylesLight, myStylesDefault, myStylesDefaultDark } from './common/styles';
-import { Styles } from 'material-ui/lib';
+import { myStylesGraphite, myStylesWhite, myStyles, myStylesLight, myStylesDefault, myStylesDefaultDark, Styles } from './common/styles';
 
-let debug = Debug('simpledocs:app:listen');
+let debug = Debug('lodge:app:listen');
 
 let history = useBasename(createHistory)({
-	basename: simpleDocsUI.path.material || 'simpledocs'
+	basename: '/'
 });
 
 var styles = {
-	'light': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesLight), simpleDocsUI.materialStyle.light),
-	'cream': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesLight), simpleDocsUI.materialStyle.cream),
-	'graphite': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesLight), simpleDocsUI.materialStyle.graphite),
-	'night': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStyles), simpleDocsUI.materialStyle.night),
-	'blue': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesDefault), simpleDocsUI.materialStyle.blue),
-	'dark': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesDefaultDark), simpleDocsUI.materialStyle.dark),
+	'light': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesWhite), snowUI.materialStyle.light),
+	'cream': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesLight), snowUI.materialStyle.cream),
+	'graphite': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesGraphite), snowUI.materialStyle.graphite),
+	'night': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStyles), snowUI.materialStyle.night),
+	'blue': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesDefault), snowUI.materialStyle.blue),
+	'dark': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesDefaultDark), snowUI.materialStyle.dark),
 }
 
 export default (Component) => {
@@ -33,9 +32,9 @@ export default (Component) => {
 			
 			const clean = location.pathname;
 			
-			let pages = clean.replace(snowUI.path.material, '').split('/');
-			let page = pages[1] || snowUI.homepage;
-			let anchor = pages[2] || false;
+			let pages = clean.split('/');
+			let page = pages[1] || '/';
+			let anchor = location.anchor;
 			
 			debug('clean page', page, pages, anchor) 
 			
@@ -50,17 +49,10 @@ export default (Component) => {
 			}
 			
 			this.state = Object.assign({ 
-				allinone: (snowUI.allinone === 'only'),
-				anchor,
 				connected: false,
-				contents: false,
-				current: {},
 				currentTheme: snowUI.materialTheme,
-				forceGrab: false,
 				history,
 				leftNav: false,
-				desktop: true,
-				desktopNav: true,
 				location,
 				newalert: {},
 				newconfirm: {
@@ -147,12 +139,11 @@ export default (Component) => {
 			});
 			
 			// update desktop
-			Gab.on('resize', (e) => {
-				debug('RESIZE #####', e);
-				var desktop = true;
-				if(e.width < snowUI.breaks.sm.width) {
-					desktop = false;
-				}
+			Gab.on('resize', (e) => { 
+				var desktop = false;
+				// if(e.width < snowUI.breaks.sm.width) {
+				// 		desktop = false;
+				// }
 				debug('RESIZE #####', e, desktop);
 				this.setState({ desktop, window: e });
 			});
@@ -180,7 +171,7 @@ export default (Component) => {
 					},2500);
 					
 					// receive page from server
-					Sockets.io.on('page', (data) => {
+					Sockets.io.on('json', (data) => {
 						debug('got page socket data', data);
 						thisComponent.pageResults(data);
 					});
@@ -197,11 +188,6 @@ export default (Component) => {
 						});
 					});
 					
-					Sockets.io.on('buildPages', (data) => {
-						debug('got build data');
-						Gab.emit('buildPages', data);
-					});
-					
 				});
 			} // end socket init
 			
@@ -209,7 +195,7 @@ export default (Component) => {
 			function _resizing() {
 				var w=window,d=document,e=d.documentElement,g=d.getElementsByTagName('body')[0],x=w.innerWidth||e.clientWidth||g.clientWidth,y=w.innerHeight||e.clientHeight||g.clientHeight;
 				
-				Gab.emit('resize', {width:x,height:y});
+				Gab.emit('resize', { width: x, height: y });
 			}
 			window.addEventListener('resize', _resizing, true);
 			_resizing();
@@ -247,13 +233,11 @@ export default (Component) => {
 						show: true,
 						duration: 1500
 					},
-					forceGrab: false,
 				});
 			} else {
 				this.setState({ 
-						page: data.page.slug || snowUI.page,
-						contents: data.page,
-						forceGrab: false
+						slug: data.slug,
+						contents: data.results,
 					}, 
 					function() {
 						/* run page js for new content */
@@ -261,13 +245,6 @@ export default (Component) => {
 						snowUI.code.__mountedPage();				
 					}
 				);
-				
-				if(isObject(data.menu)) {
-					snowUI.menu = data.menu;
-				}
-				if(isArray(data.tree)) {
-					snowUI.tree = data.tree;
-				}
 			}
 		}
 		

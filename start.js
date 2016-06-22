@@ -1,3 +1,3 @@
-var Lodge = require('lib/index');
+var Lodge = require('./lib/index');
 
-Lodge.serve(8888);
+Lodge.serve(8888, true);

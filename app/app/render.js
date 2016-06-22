@@ -6,9 +6,10 @@ import Debug from 'debug';
 import Menu from './common/components/menu';
 import Confirm from './common/components/confirm';
 import routes from './routes';
-import {Card, CardText, FontIcon, IconMenu, IconButton, AppBar, RaisedButton, LeftNav, MenuItem, Styles, Divider, List, ListItem} from 'material-ui/lib';
+import {Card, CardText, FontIcon, IconMenu, IconButton, AppBar, RaisedButton, LeftNav, MenuItem, Divider, List, ListItem} from 'material-ui';
+import { Styles } from './common/styles';
 
-let debug = Debug('simpledocs:app:render');
+let debug = Debug('lodge:app:render');
 
 class Main extends Component {
 	constructor(props) {
@@ -19,13 +20,10 @@ class Main extends Component {
 		
 		this._defaults = {
 			leftNav: false,
-			current: {},
-			contents: false,
-			allinone: false,
 			search: '',
-			forceUpdate: false,
-			anchor: false,
-			forceGrab: false,
+			slug: '',
+			filters: [],
+			mode: 'cors',
 		}
 		
 		debug('fresh state', this.state);
@@ -33,8 +31,6 @@ class Main extends Component {
 		this.handleLeftNav = this.handleLeftNav.bind(this);
 		this.LeftNavClose = this.LeftNavClose.bind(this);
 		this.goTo = this.goTo.bind(this);
-		this.allInOne = this.allInOne.bind(this);
-		this.goToAnchor = this.goToAnchor.bind(this);
 		this.setAsset = this.setAsset.bind(this);
 		this.appState = this.appState.bind(this);
 		this.answerConfirm = this.answerConfirm.bind(this);
@@ -43,27 +39,13 @@ class Main extends Component {
 	}
 	
 	componentDidMount() {
-
 		this.switchTheme(this.props.currentTheme, false);
-		
-		/* set the height of the menu and minimum height of content */
-		var menu = document.getElementById('menu');
-		let clientHeight = document.documentElement.clientHeight;
-		let footer = document.getElementById('simpledocs-footer');
-		let appbar = document.getElementById('appbar');
-		
-		menu.style.height = clientHeight - appbar.clientHeight + "px";	
-		debug('menu height',  clientHeight, appbar.clientHeight, clientHeight - appbar.clientHeight, menu.style.height, menu.style);
-		//snowUI.contentHeight = clientHeight - appbar.clientHeight - footer.clientHeight - 25;
 	}
 	
 	componentWillReceiveProps(props) {
 		// update from listener
 		var p = { ...props };
 		debug('listener props', p);
-		if(props.page === snowUI.singlePage && !this.state.allinone) {
-			p.allinone = true;
-		}
 		this.setState(p);	
 	}
 	
@@ -101,7 +83,6 @@ class Main extends Component {
 				currentTheme: theme,
 				forceUpdate: true
 			}, function() {
-				Prism.highlightAll();
 			});
 		}
 	}
@@ -116,7 +97,8 @@ class Main extends Component {
 		if(e && typeof e.preventDefault === 'function') {
 			e.preventDefault();
 		}
-		if(this.state.desktop && (this.state.window.width > snowUI.breaks.sm.width)) {
+		debug('handleLeftNav', this.state);
+		if(this.state.desktop) {
 			this.appState({desktopNav: !this.state.desktopNav});
 		} else {
 			this.appState({leftNav: !this.state.leftNav});
@@ -154,51 +136,6 @@ class Main extends Component {
 		});
 	}
 	
-	goToAnchor(route, v) {
-		debug('goToAnchor', route, v);
-		var simple = document.getElementById("simpledocs");
-		var goto = document.getElementById(route) ? document.getElementById(route).offsetTop : 0;
-		simple.scrollTop = goto < 30 ? 0 : goto - 30;
-			
-		let state = {
-			allinone: true,
-			anchor: route,
-			contents: this.props.contents
-		}
-		
-		this.appState(Object.assign({ ...this._defaults }, state), () => {
-			this.state.history.push({
-				pathname: Path.join('/' , snowUI.singlePage, route),
-				search: this.state.query,
-			})
-		});
-		return false
-	}
-	
-	allInOne(slug) {
-		debug('goTo allinone')
-		
-		let state = {
-			page: snowUI.singlePage,
-			anchor: slug || snowUI.page,
-			allinone: true
-		}
-		
-		// fade the content div before its replaced
-		snowUI.fadeOut('slow', () => {
-			this.appState(Object.assign({ ...this._defaults }, state), () => {
-				var simple = document.getElementById("simpledocs");
-				simple.scrollTop = 0;
-				debug('push history', '/', snowUI.singlePage, state.anchor);
-				this.state.history.push({
-					pathname: Path.join('/' , snowUI.singlePage, state.anchor),
-					search: this.state.query,
-				});
-				
-			});
-		});
-	}
-	
 	goTo(state) {
 		debug('goTo state', state)
 		
@@ -209,25 +146,22 @@ class Main extends Component {
 			}
 		}
 		
-		if(this.props.page === snowUI.singlePage) {
-			state.forceGrab = true;
-		}
-		
 		// fade the content div before its replaced
 		snowUI.fadeOut('slow', () => {
 			var send = Object.assign({ ...this._defaults }, state);
 				
 			this.appState(send, () => {
-				debug('push history ', '/' , this.state.page, this._defaults, state, send)
+				debug('push history ', '/' , this.state.page, this.state.slug, this._defaults, state, send)
+				var str = this.state.slug || this.state.fetch || '';
 				this.state.history.push({
-					pathname: Path.join('/' , this.state.page),
+					pathname: Path.join('/' , this.state.page, str),
 					search: this.state.query,
 				});
 			});	
 		});
 		
 	}
-	
+	 
 	setAsset(asset, callback) {
 		this.appState(asset, callback);
 	}
@@ -264,15 +198,23 @@ class Main extends Component {
 	render() {
 		debug('render state', this.state);
 		
-		let title = this.state.current.title || this.state.page;
+		let title = this.state.page; 
+		
+		let isConnectedIcon = ( this.state.connected === true || !snowUI.usesockets )
+			? 
+				<IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lime500} style={{fontSize:'20px'}}  >speaker_phone</FontIcon></IconButton>
+			:
+				(this.props.sockets.connected.firstRun) 
+				?
+					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px'}} color={Styles.Colors.lime500}  title="Connecting to server for the first time">speaker_phone</FontIcon></IconButton></span>
+				:
+					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px', backgroundColor: Styles.Colors.red900}} color={Styles.Colors.red900}  title="Connection to server lost">cloud_offline</FontIcon></IconButton></span>
 		
 		let appBarRightIcons = (<span>
-			
-			<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons"  >info_outline</FontIcon></IconButton></span>
-			
+						
 			<span style={{ cursor: 'pointer' }}>
 				<IconMenu
-					iconButtonElement={<FontIcon className="material-icons" >invert_colors</FontIcon>}
+					iconButtonElement={<FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >invert_colors</FontIcon>}
 					onItemTouchTap={(e, val) => {
 						debug(e, val);
 						if(val.props.value === 'boot') {
@@ -288,11 +230,12 @@ class Main extends Component {
 				  <MenuItem primaryText="Graphite" value="graphite"/>
 				  <MenuItem primaryText="Night" value="night"/>
 				  <MenuItem primaryText="Dark" value="dark" />
-				  <MenuItem primaryText="Bootstrap" value="boot" />
 				</IconMenu>
 			</span>
 			
-			<IconButton onClick={(e)=>{e.preventDefault();this.goTo(snowUI.homepage);}} ><FontIcon className="material-icons"  >home</FontIcon></IconButton>
+			{isConnectedIcon}
+			
+			<IconButton onClick={this.handleLeftNav} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >menu</FontIcon></IconButton>
 			
 			<div style={{width:20,height:20,display:'inline-block'}} />
 		</span>);
@@ -301,9 +244,9 @@ class Main extends Component {
 			<div style={{zIndex:1101, width: '100%', height: '64px' ,position: 'fixed', }} >
 				<AppBar
 					title={<div id="appbarTitle" >{title}</div>}
-					onLeftIconButtonTouchTap={this.handleLeftNav} 
 					iconElementRight={appBarRightIcons}
 					style={{boxShadow: 'none'}}
+					iconElementLeft={<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo(snowUI.homepage);}} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >home</FontIcon></IconButton></span>}
 				/>
 			</div>
 			<div style={{height:65,width:'100%'}} />
@@ -314,13 +257,13 @@ class Main extends Component {
 		return (<div>
 			{appbar}
 			
-			<Menu2 update={snowUI.alwaysloadtree} docked={true}  searchToggle={this.searchToggle}  goTo={this.goTo} handleLeftNav={this.handleLeftNav} goToAnchor={this.goToAnchor} allInOne={this.allInOne} { ...this.state } />
+			<Menu docked={true} secondary={true} searchToggle={this.searchToggle}  goTo={this.goTo} handleLeftNav={this.handleLeftNav} { ...this.state } />
 			
 			<div className="clearfix" />
-			<div className="simpledocs-container" >
-				<div style={{paddingRight:0, paddingLeft:0}} className={overrideContent}>
+			<div className="react-hot-reload-container" >
+				<div style={{paddingRight:0, paddingLeft:0}} >
 					<div id="content-fader">
-						<Page { ...this.state } assets={this.appState} appState={this.appState} switchTheme={this.switchTheme} goTo={this.goTo} handleLeftNav={this.handleLeftNav} goToAnchor={this.goToAnchor} allInOne={this.allInOne} />
+						<Page { ...this.state } secondary={true} appState={this.appState} switchTheme={this.switchTheme} goTo={this.goTo} handleLeftNav={this.handleLeftNav}  />
 					</div>
 				</div>
 			</div>

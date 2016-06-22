@@ -4,14 +4,15 @@ import SF from  './socketFunctions';
 import io from 'socket.io-client';
 import Gab from '../common/gab';
 
-let	debug = debugging('simpledocs:app:lib:sockets');
+let	debug = debugging('lodge:app:lib:sockets');
 
 let Sockets = function() {
 	
 	// connected
 	this.connected = {
 		io: false,
-		open: false
+		open: false,
+		firstRun: true,
 	}
 	this.proxy = 'proxy';
 }
@@ -25,6 +26,7 @@ Sockets.prototype.connectAuth = function(callback) {
 	this.io.on('connect',(data) => {
 		debug('open connected', snowUI.namespace);
 		this.connected.open = true;
+		this.connected.firstRun = false;
 		this.connected.io =  {
 			get() {
 				this.io.socket.isConnected();
@@ -63,11 +65,13 @@ Sockets.prototype.init = function(opts, callback) {
 	let _this = this;
 	
 	// connection
+	debug('init io connect', '//' + this.host + ':' + this.port + snowUI.namespace);
 	this.io = io('//' + this.host + ':' + this.port + snowUI.namespace, { 'forceNew': true });
 	
 	this.io.on('connect',(data) => {
 		debug('io connected', snowUI.namespace);
 		this.connected.open = true;
+		this.connected.firstRun = false;
 		this.connected.io =  {
 			get() {
 				this.io.socket.isConnected();

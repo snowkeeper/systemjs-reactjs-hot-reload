@@ -1,8 +1,9 @@
 import React from 'react';
-import { RaisedButton, FlatButton, Dialog, Styles } from 'material-ui/lib';
+import { RaisedButton, FlatButton, Dialog } from 'material-ui';
+import { Styles } from '../styles';
 
 import debugging from 'debug';
-let	debug = debugging('epg:app:common:components:dialog');
+let	debug = debugging('lodge:app:common:components:dialog');
 
 export default class Dialog2 extends React.Component {
 	constructor(props) {

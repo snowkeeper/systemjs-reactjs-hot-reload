@@ -1,5 +1,5 @@
 import debugging from 'debug';
-let	debug = debugging('simpledocs:app:lib:socketFunctions');
+let	debug = debugging('lodge:app:lib:socketFunctions');
 
 let randomNumber = Math.random;
 
@@ -17,7 +17,7 @@ function options() {
 	}
 	exports.trap = exports.trapResponse;
 	
-	exports.page = function(page, search) {
+	exports.json = function(slug) {
 		var nowTime = new Date().getTime();
 		var newTime = new Date(nowTime + 10000).getTime();
 		
@@ -28,15 +28,8 @@ function options() {
 		
 		snowUI.watingForPage = true;
 		snowUI.waitTimeout = newTime;
-		
-		if(page === snowUI.singlePage) {
-			this.io.emit('allinone', page);
-		} else if(page.search('search::') > -1) {
-			this.io.emit('search', search);
-		} else {
-			this.io.emit('page', page);
-		}
-		
+		debug('send socket json request', slug);
+		this.io.emit('json', { slug });
 	};
 	
 	exports.status = function(callback) {

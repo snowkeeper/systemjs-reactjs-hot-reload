@@ -1,18 +1,17 @@
-import {EventEmitter} from 'events';
-import request from 'superagent';
-import {isFunction} from 'lodash';
+import { EventEmitter } from 'events';
+import { isFunction } from 'lodash';
 import Debug from 'debug';
+import fetchPolyfill from 'fetch'
+if(typeof window.fetch == 'undefined' ) {
+	// polyfill fetch
+	window.fetch = fetchPolyfill
+}
 
-let debug = Debug('simpledocs:app:common:gab');
+let debug = Debug('lodge:app:common:gab');
 
 class Gab extends EventEmitter {
 	constructor(props) {
 		super(props)
-		
-	}
-	
-	reset() {
-		
 	}
 		
 	request(route, moon, callback) {
@@ -28,44 +27,34 @@ class Gab extends EventEmitter {
 			this.emit('request', res);
 			return callback(res);
 		}
-		var page = route ? route : snowUI.homepage;
-		if(page === snowUI.singlePage) {
-			var root = snowUI.api.allinone;
-			var	url = root + '/' + page;
-		} else if(route.search('search::') > -1) {
-			var root = snowUI.api.search;
-			var	url = root + '/' + page;
-		} else {
-			var root = snowUI.api.page;
-			var	url = root + '/' + page + '.json';
+		var	url = '/json/' + route;
+		
+		debug('request', url);
+		
+		var result = {
+			success: false,
+			slug: route
 		}
 		
-		debug('request', url, root, page);
-		
-		request
-			.get(url)
-			.set({
-				'Accept': 'application/json'
+		fetch(url, { mode: 'cors' })
+			.then(r => {
+				return r.json();
 			})
-			.end(function(err, res) {
-				debug('request result', err, res);
-				var result = {
-					success: false
-				}
-				if(err) {
-					result.message = err.status;
-					_this.emit('request', result);
-					return callback(result);
-				} else {
-					result.success = true;
-					result.page = res.body.page || res.body.search;
-					result.tree = res.body.tree;
-					result.menu = res.body.menu;
-					_this.emit('request', result);
-					return callback(null, result);
-				}
-			});
-		// end request
+			.then(data => {
+				debug('request result', data);
+				result.success = true;
+				result.json = data.results;
+				_this.emit('request', result);
+				return callback(null, result);
+			})
+		.catch(e => {
+			console.error('error fetching', e)
+			debug('request error', e, res);
+			result.message = e.message;
+			_this.emit('request', result);
+			return callback(result);			
+		})
+		
 	}
 	
 	rawRequest(url, callback) {
@@ -84,11 +73,17 @@ class Gab extends EventEmitter {
 			.end(function(err, res) {
 				debug('request result', err, res);
 				var result = {
-					success: false
+					success: false,
+					page: res.body.page,
+					slug: url
 				}
 				if(err) {
+					result.message = err.status;
+					_this.emit('request', result);
 					return callback(result);
 				} else {
+					result.success = true;
+					_this.emit('request', result);
 					return callback(null, result);
 				}
 			});

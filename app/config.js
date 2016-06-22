@@ -10,7 +10,8 @@ System.config({
   },
   paths: {
     "github:*": "jspm_packages/github/*",
-    "npm:*": "jspm_packages/npm/*"
+    "npm:*": "jspm_packages/npm/*",
+    "dependencies": "bundles/dependencies"
   },
 
   map: {
@@ -24,14 +25,23 @@ System.config({
     "fs": "github:jspm/nodelibs-fs@0.1.2",
     "history": "npm:history@3.0.0",
     "lodash": "npm:lodash@4.13.1",
+    "marked": "npm:marked@0.3.5",
     "material-ui": "npm:material-ui@0.15.0",
     "path": "github:jspm/nodelibs-path@0.1.0",
     "react": "npm:react@15.1.0",
     "react-dom": "npm:react-dom@15.1.0",
+    "react-tap-event-plugin": "npm:react-tap-event-plugin@1.0.0",
     "socket.io-client": "npm:socket.io-client@1.4.6",
     "socketio/socket.io-client": "github:socketio/socket.io-client@1.4.6",
+    "striptags": "npm:striptags@2.1.1",
     "superagent": "npm:superagent@2.0.0",
+    "systemjs-hot-reloader": "github:capaj/systemjs-hot-reloader@0.6.0",
     "util": "github:jspm/nodelibs-util@0.1.0",
+    "github:capaj/systemjs-hot-reloader@0.6.0": {
+      "debug": "npm:debug@2.2.0",
+      "socket.io-client": "github:socketio/socket.io-client@1.4.6",
+      "weakee": "npm:weakee@1.0.0"
+    },
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.4.1"
     },

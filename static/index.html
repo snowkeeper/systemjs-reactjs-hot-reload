@@ -10,26 +10,27 @@
 	
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="/app/styles/material-ui.css">
+	<link rel="stylesheet" type="text/css" href="/css/material-ui.css">
 	
   </head>
   <body>
     <div id="body">
       <div id="confirm-modal"></div>
-      <div id="reactjs-hot-reload">
+      <div id="react-hot-reload">
 			<div id="placeholder">
+				<div id="hello">Hello</div>
 				<div style="padding-bottom:25px;padding-top:50px;text-align:center;" ><div class="Spinner Spinner--default Spinner--lg" ><span class="Spinner_dot Spinner_dot--first" ></span><span class="Spinner_dot Spinner_dot--second" ></span><span class="Spinner_dot Spinner_dot--third" ></span></div></div>
+				
 			</div>
       </div>
     </div>
     <div class="container">
       <div id="footer"></div>
     </div>
+    <script src="/js/bundles/material-ui.js"></script>
     <script>
-      socketPort=11000
-      socketHost='@'
+		setTimeout(function() {
+		  document.getElementById('hello').innerHTML = 'lodge mode<br /><span style="font-size:12px">Loading is slow in lodge mode since we include <br />all of our non-vendor client files individually. <br /><br />Production settings running the full bundle <br />eliminate the load time.</p> ';
+		}, 1000);
     </script>
-    <script src="/jspm_packages/system.js"></script>
-    <script src="/app/app.js"></script>
-  
 </body></html>

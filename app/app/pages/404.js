@@ -1,9 +1,10 @@
 import React from 'react';
 import Debug from 'debug'
 import Gab from '../common/gab'
-import { Divider, FontIcon, Styles, CardText, Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui/lib';
+import { Divider, FontIcon, CardText, Card, CardActions, CardHeader, CardMedia, CardTitle } from 'material-ui';
+import { Styles } from '../common/styles';
 
-let debug = Debug('epg:app:pages:disconnect');
+let debug = Debug('lodge:app:pages:disconnect');
 		
 export default class Disconnect extends React.Component {
 	constructor(props) {
@@ -20,15 +21,19 @@ export default class Disconnect extends React.Component {
 		this._update = true;
 	}
 	componentDidUpdate() {
+		snowUI.fadeIn();
 		debug('didUpdate');
 	}
 	componentDidMount() {
 		debug('did mount');
-		
+		snowUI.fadeIn();
 	}
 	render() {
-		debug('disconnect render', this.state, this.props);
-		
+		debug('disconnect render', this.props);
+		let message = (<p>The page you requested is not valid.</p>);
+		if(this.props.errorMessage) {
+			message = (<p><h2 style={{color:'red'}}>{this.props.errorMessage}</h2></p>);
+		}
 		return (<div className="col-xs-12" >
 			<Card>
 				<CardTitle 
@@ -42,7 +47,8 @@ export default class Disconnect extends React.Component {
 						<FontIcon style={{fontSize:'128px'}} className="material-icons" color={Styles.Colors.red600} hoverColor={Styles.Colors.amber500} >error</FontIcon>
 					</div>
 					<div style={{marginBottom:30}} />
-					<p>The page or lineup you requested is not valid.</p>
+					{message}
+					<br />
 					<p><a href="#" onClick={(e)=>{e.preventDefault();window.history.back();}}>Previous Page</a></p>
 				</CardText>
 			</Card>

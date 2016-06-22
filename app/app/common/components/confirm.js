@@ -1,9 +1,11 @@
 import React from 'react';
-import { RaisedButton, FlatButton, Dialog, Styles } from 'material-ui/lib';
+import { RaisedButton, FlatButton, Dialog } from 'material-ui';
+import { Styles } from '../styles';
 
 import debugging from 'debug';
-let	debug = debugging('epg:app:common:components:confirm');
+let	debug = debugging('lodge:app:common:components:confirm');
 
+debug('styles', Styles); 
 	
 let myStyles = {
 	//textColor: Styles.Colors.blue600,
@@ -22,7 +24,6 @@ export default class Modal extends React.Component {
 	}
 	
 	getChildContext() {
-		console.log(this.props)
 		return {
 			muiTheme: this.props.theme
 		};
