@@ -30,6 +30,7 @@ System.config({
     "path": "github:jspm/nodelibs-path@0.1.0",
     "react": "npm:react@15.1.0",
     "react-dom": "npm:react-dom@15.1.0",
+    "react-router": "npm:react-router@2.4.1",
     "react-tap-event-plugin": "npm:react-tap-event-plugin@1.0.0",
     "socket.io-client": "npm:socket.io-client@1.4.6",
     "socketio/socket.io-client": "github:socketio/socket.io-client@1.4.6",
@@ -378,6 +379,13 @@ System.config({
     "npm:hash.js@1.0.3": {
       "inherits": "npm:inherits@2.0.1"
     },
+    "npm:history@2.1.2": {
+      "deep-equal": "npm:deep-equal@1.0.1",
+      "invariant": "npm:invariant@2.2.1",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "query-string": "npm:query-string@3.0.3",
+      "warning": "npm:warning@2.1.0"
+    },
     "npm:history@3.0.0": {
       "invariant": "npm:invariant@2.2.1",
       "process": "github:jspm/nodelibs-process@0.1.2",
@@ -407,7 +415,7 @@ System.config({
     },
     "npm:isomorphic-fetch@2.2.1": {
       "node-fetch": "npm:node-fetch@1.5.3",
-      "whatwg-fetch": "npm:whatwg-fetch@0.9.0"
+      "whatwg-fetch": "npm:whatwg-fetch@1.0.0"
     },
     "npm:lodash._baseclone@4.5.7": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
@@ -548,6 +556,9 @@ System.config({
     "npm:punycode@1.3.2": {
       "process": "github:jspm/nodelibs-process@0.1.2"
     },
+    "npm:query-string@3.0.3": {
+      "strict-uri-encode": "npm:strict-uri-encode@1.1.0"
+    },
     "npm:query-string@4.2.2": {
       "object-assign": "npm:object-assign@4.1.0",
       "strict-uri-encode": "npm:strict-uri-encode@1.1.0"
@@ -568,6 +579,14 @@ System.config({
     },
     "npm:react-dom@15.1.0": {
       "react": "npm:react@15.1.0"
+    },
+    "npm:react-router@2.4.1": {
+      "history": "npm:history@2.1.2",
+      "hoist-non-react-statics": "npm:hoist-non-react-statics@1.2.0",
+      "invariant": "npm:invariant@2.2.1",
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "react": "npm:react@15.1.0",
+      "warning": "npm:warning@2.1.0"
     },
     "npm:react-tap-event-plugin@1.0.0": {
       "fbjs": "npm:fbjs@0.2.1",

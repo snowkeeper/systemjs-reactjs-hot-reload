@@ -7,6 +7,7 @@ var snowUI = {
 	materialStyle: {
 	
 	},
+	materialTheme: 'light',
 	namespace: '/lodge',
 	usesockets: true,
 	port: 8888,

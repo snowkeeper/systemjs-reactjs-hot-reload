@@ -8,6 +8,8 @@ import Confirm from './common/components/confirm';
 import routes from './routes';
 import {Card, CardText, FontIcon, IconMenu, IconButton, AppBar, RaisedButton, LeftNav, MenuItem, Divider, List, ListItem} from 'material-ui';
 import { Styles } from './common/styles';
+import { withRouter } from 'react-router'
+
 
 let debug = Debug('lodge:app:render');
 
@@ -45,7 +47,7 @@ class Main extends Component {
 	componentWillReceiveProps(props) {
 		// update from listener
 		var p = { ...props };
-		debug('listener props', p);
+		debug('render props', p);
 		this.setState(p);	
 	}
 	
@@ -137,7 +139,6 @@ class Main extends Component {
 	}
 	
 	goTo(state) {
-		debug('goTo state', state)
 		
 		if(typeof state === 'string') {
 			// accept strings for the page
@@ -146,18 +147,38 @@ class Main extends Component {
 			}
 		}
 		
+		debug('goTo state', state)
+		
 		// fade the content div before its replaced
 		snowUI.fadeOut('slow', () => {
 			var send = Object.assign({ ...this._defaults }, state);
-				
-			this.appState(send, () => {
-				debug('push history ', '/' , this.state.page, this.state.slug, this._defaults, state, send)
-				var str = this.state.slug || this.state.fetch || '';
-				this.state.history.push({
-					pathname: Path.join('/' , this.state.page, str),
-					search: this.state.query,
-				});
-			});	
+			
+			if(!send.path && send.page) {
+				send.path = '/' + send.page;
+			}
+			if(send.slug) {
+				send.path += '/' + send.slug;
+			}
+			
+			if(!send.path) {
+				send.path = '/500';
+				send.error = 'Invalid page configuration';
+				send.page = '500';
+				send.FontIcon = {
+					icon: 'help',
+					Color: 'blue',
+					HoverColor: 'cyan',
+				};
+				send.message = 'Bad Request';
+			}
+			
+			debug('sendto', send);
+			this.props.router.push({
+				pathname: send.path,
+				query: { fetch: send.fetch },
+				state: send
+			});
+			
 		});
 		
 	}
@@ -229,7 +250,7 @@ class Main extends Component {
 				  <MenuItem primaryText="Blue" value="blue"/>
 				  <MenuItem primaryText="Graphite" value="graphite"/>
 				  <MenuItem primaryText="Night" value="night"/>
-				  <MenuItem primaryText="Dark" value="dark" />
+				  <MenuItem primaryText="Dark (mui default)" value="dark" />
 				</IconMenu>
 			</span>
 			
@@ -252,7 +273,7 @@ class Main extends Component {
 			<div style={{height:65,width:'100%'}} />
 		</div>);
         
-        const Page = routes(this.state.page);
+        //const Page = routes(this.state.page);
         
 		return (<div>
 			{appbar}
@@ -263,7 +284,7 @@ class Main extends Component {
 			<div className="react-hot-reload-container" >
 				<div style={{paddingRight:0, paddingLeft:0}} >
 					<div id="content-fader">
-						<Page { ...this.state } secondary={true} appState={this.appState} switchTheme={this.switchTheme} goTo={this.goTo} handleLeftNav={this.handleLeftNav}  />
+						{this.props.children && React.cloneElement(this.props.children, Object.assign({ switchTheme: this.switchTheme }, this.props))}
 					</div>
 				</div>
 			</div>
@@ -289,6 +310,6 @@ Main.childContextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-export let myComponent =  wrapListeners(Main);
+export let myComponent =  wrapListeners(withRouter(Main));
 
 export default myComponent;

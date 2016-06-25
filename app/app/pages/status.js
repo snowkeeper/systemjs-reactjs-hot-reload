@@ -42,7 +42,7 @@ export default class Status extends React.Component {
 					subtitleColor={Styles.Colors.grey500}
 				/>
 			);
-		} else if(this.props.sockets.connected.firstRun) {
+		} else if(this.props.sockets && this.props.sockets.connected.firstRun) {
 			status = (
 				<CardHeader 
 					title={"Client trying to initate connection"}
@@ -171,7 +171,7 @@ export default class Status extends React.Component {
 						title={"Light"}
 						onClick={e => this.props.switchTheme('light')}
 						style={{backgroundColor: '#eeeeee', cursor: 'pointer'}}
-					/>
+					/> 
 					<GridTile 
 						key="MaterialDLightTheme"
 						title={"Blue"}
@@ -192,7 +192,7 @@ export default class Status extends React.Component {
 					/>
 					<GridTile 
 						key="MateriallDDarkTheme"
-						title={"Dark"}
+						title={"Dark (mui default)"}
 						onClick={e => this.props.switchTheme('dark')}
 						style={{backgroundColor: '#0097A7', cursor: 'pointer'}}
 					/>

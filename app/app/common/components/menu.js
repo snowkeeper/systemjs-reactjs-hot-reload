@@ -80,6 +80,17 @@ export default class Menu extends React.Component {
 					<MenuItem onTouchTap={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
+							fetch: 'help',
+							message: 'You can add cutom messages too.',
+							error: 'Error messages are red',
+							FontIcon: {
+								icon: 'help'
+							}
+						});
+					}}>Malformed</MenuItem>
+					<MenuItem onTouchTap={(e) => {
+						e.preventDefault(e);
+						this.props.goTo({
 							page: 'page',
 							slug: 'help'
 						});

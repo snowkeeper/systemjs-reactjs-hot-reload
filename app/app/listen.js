@@ -3,15 +3,10 @@ import { isObject, isArray } from 'lodash';
 import Debug from 'debug';
 import Gab from './common/gab';
 import Sockets from './lib/sockets';
-import { createHistory, useBasename  } from 'history';
 import Path from 'path';
 import { myStylesGraphite, myStylesWhite, myStyles, myStylesLight, myStylesDefault, myStylesDefaultDark, Styles } from './common/styles';
 
 let debug = Debug('lodge:app:listen');
-
-let history = useBasename(createHistory)({
-	basename: '/'
-});
 
 var styles = {
 	'light': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesWhite), snowUI.materialStyle.light),
@@ -28,44 +23,38 @@ export default (Component) => {
 			super(props);
 			this.displayName = 'Listeners';
 			
-			debug('listener',props);
-			
-			const clean = location.pathname;
-			
-			let pages = clean.split('/');
-			let page = pages[1] || '/';
+			let loc = props.location;
+			let pastState = loc.state;
+						
 			let anchor = location.anchor;
-			
-			debug('clean page', page, pages, anchor) 
+			let fetch = pastState.fetch || loc.fetch || false;
+			let slug = pastState.slug || loc.slug || false;
+			let filters = pastState.filters || loc.filters || [];
+			let page = pastState.page || loc.pathname || false;
 			
 			if(page.charAt(0) == '/') {
 				page = page.substring(1);
-			}
-		
-			var search = false;
-			if(page.search('::') > -1 ) {
-				var ss = page.split('::');
-				search = ss[1];
 			}
 			
 			this.state = Object.assign({ 
 				connected: false,
 				currentTheme: snowUI.materialTheme,
-				history,
 				leftNav: false,
-				location,
 				newalert: {},
 				newconfirm: {
 					open: false
 				},
-				page: page || snowUI.homepage,
-				query: location.search,
+				page,
+				query: loc.query,
+				fetch: fetch,
 				sockets: Sockets,
 				styles,
-				search: search || history.search || false,
+				search: loc.search,
 				theme: styles[snowUI.materialTheme] || styles.blue
 				
 			}, snowUI.__state);
+			
+			debug('listener component', props, 'new state:', this.state);
 			
 			snowUI.page = this.state.page;
 			
@@ -77,12 +66,13 @@ export default (Component) => {
 		}
 		
 		componentWillReceiveProps(props) {
-			const clean = props.page
-			if(clean !== this.state.page) {
-				this.setState({
-					page: clean,
-					prev: this.state.page
-				});
+			
+			const State = props.location.state || {};
+			
+			debug('listener component', props, 'new state:', State);
+			
+			if(State.page !== this.state.page) {
+				this.setState(State);
 				this._update = true;
 			}
 		}
@@ -249,7 +239,6 @@ export default (Component) => {
 		}
 		
 		render() {
-			// return React.cloneElement(Component, this.props)
 			debug('render listeners state', this.state);
 			return  <Component { ...this.props } { ...this.state } appState={this.newState} />;
 		}
