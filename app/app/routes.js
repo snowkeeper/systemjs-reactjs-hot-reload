@@ -2,112 +2,123 @@ import Home from './pages/home';
 import Status from './pages/status';
 import Page from './pages/page';
 import Fetch from './pages/fetch';
-import { isObject } from 'lodash';
+import { isObject, forEach } from 'lodash';
 import Debug from 'debug';
 import fourofour from './pages/404.js';
-import App from './render.js';
+import RouteParser from 'route-parser';
+import React from 'react';
 
 let debug = Debug('lodge:app:routes');
 
-let Routes = [];
+let Route = [];
 
 // add each page
-Routes.push({ path: '/status', component: Status });
-Routes.push({ path: '/page', component: Page });
-Routes.push({ path: '/fetch', component: Fetch });
-Routes.push({ path: '/json', component: Fetch });
-Routes.push({ path: '/markdown', component: Fetch });
-Routes.push({ path: '/status', component: Fetch });
-Routes.push({ path: '/home', component: Home });
-Routes.push({ path: '/404', component: fourofour });
-
-// redirects
-function sendTo404(nextState, replaceState) {
-	replaceState({ nextPathname: nextState.location.pathname }, '/404')
-}
-Routes.push({ path: '/lost', onEnter: sendTo404 });
-
-function sendToStatus(nextState, replaceState) {
-	replaceState({ nextPathname: nextState.location.pathname }, '/status')
-}
-Routes.push({ path: '/disconnected', onEnter: sendToStatus })
-
-Routes.push({ path: '*', component: fourofour })
+Route.push({ path: '/status', component: Status });
+Route.push({ path: '/page', component: Page });
+Route.push({ path: '/fetch', component: Fetch });
+Route.push({ path: '/json', component: Fetch });
+Route.push({ path: '/markdown', component: Fetch });
+Route.push({ path: '/status', component: Fetch });
+Route.push({ path: '/home', component: Home });
+Route.push({ path: '/404', component: fourofour });
 
 // export
-const routeConfig = [
-  { path: '/',
-    component: App,
-    indexRoute: { component: Home },
-    catchAll: { component: fourofour },
-    childRoutes: Routes
-  }
-]
+export const Routes = {
+	path: snowUI.basepath,
+	indexRoute: { component: Home },
+	notFound: { component: fourofour },
+	redirect: [
+		{ path: '/disconnected', sendTo: '/status' },
+		{ path: '/lost', sendTo: '/404' },
+	],
+	routes: Route
+}
 
-export default routeConfig
+export default Routes
 
-/*
-let routes = {
-	status: Status,
-	page: Page,
-	fetch: Fetch,
-	json: Fetch,
-	code: Fetch,
-	markdown: Fetch,
-	redirect: {
-		lost: '404',
-		disconnected: 'status'
-	},
-	home: Home
-};
-routes['404'] = fourofour;
-
-const routeConfig = function(route) {
-	if(!route) {
-		route = 'home';
-	}
-	debug(route, isObject(routes[route]));
-	if(routes[route]) {
-		// find the correct route to return
-		if(isObject(routes[route]) && 'function' !== typeof routes[route]) {
-			// 404 for bad page
-			return fourofour;
-		} else {
-			// return the requested page
-			return routes[route];
-		}
-		
-	} else if(routes.redirect[route]) {
-		// return a redirect
-		return routes[routes.redirect[route]]	
+export const RouteMatch = function(path) {
+	debug('RouteMatch:', path);	
 	
-	} else {
-		// return 404
-		return fourofour;
-		
+	var cfg = Routes;
+	
+	var parser = new RouteParser(path);
+	
+	var indexMatch = parser.match(cfg.path); 
+	if(indexMatch) {
+		return {
+			component: React.createElement(cfg.indexRoute),
+			matched: cfg.path
+		}
+	}
+	
+	if(cfg.redirect.length > 0) {
+		var hasRedirect = checkRedirects(parser);
+		if(hasRedirect) {
+			var ret = RouteMatch(hasRedirect);
+			debug('RAN redirect', ret);
+			return ret;
+		}
+	}
+	
+	if(cfg.routes.length > 0) {
+		var hasRoute = checkRoutes(parser);
+		if(hasRoute) {
+			return hasRoute;
+		}
+	}
+	
+	if(isObject(cfg.notFound) && cfg.notFound.component) {
+		return {
+			component: React.createElement(cfg.notFound.component),
+			matched: false
+		}	
+	} else if(cfg.indexRoute) {
+		return {
+			component: React.createElement(cfg.indexRoute),
+			matched: false
+		}	
+	}
+	
+	return {
+		component: <span />,
+		matched: false
 	}	
 }
 
-export default routeConfig
-
-
-
-Routes.push({ 
-	path: '/fetch', 
-	component: Example,
-	indexRoute: { component: Jade('en/pages/docs/learn/fetch') },
-    catchAll: { component: Jade('en/pages/docs/learn/fetch') },
-    childRoutes: [
-		{ path: 'text', component: Fetch('https://developer.mozilla.org/en-US/docs/Web/API/Body', ['body','noscript','clean']) },
-		{ path: 'body', component: Fetch('https://developer.mozilla.org/en-US/docs/Web/API/Body', ['body','noscript']) },
-		{ path: 'noscript', component: Fetch('https://developer.mozilla.org/en-US/docs/Web/API/Body', ['noscript']) },
-		{ path: 'json/code', component: Fetch('https://www.reddit.com/search.json?q=keystonejs', ['json','code']) },
-		{ path: 'fail', component: Fetch('https://www.npmjs.com/package/keystone', ['body','noscript']) }
-    ]
-})
-
-Routes.push({ path: '*', component: Jade('/404') })
-
-const home = Jade('/home');
-
-*/
+function checkRedirects(parser) {
+	forEach(Routes.redirect, route => {
+		var match = parser.match(route.path);
+		if(match) {
+			debug('matched redirect', match, route);
+			return route.path;
+		}
+	});
+	return false;
+}
+ 
+function checkRoutes(parser) {
+	let matched = false;
+	forEach(Routes.routes, route => {
+		if(matched) return false;
+		
+		var match = parser.match(route.path);
+		if(match) {
+			debug('matched route', route, match);
+			if(!isObject(match)) {
+				match = {
+					match
+				}
+			}
+			matched = Object.assign({
+				component: React.createElement(route.component),
+				matched: route.path,
+			}, match);
+		}
+	});
+	if(matched) {
+		return matched;
+	} else {
+		return false;
+	}
+	
+}

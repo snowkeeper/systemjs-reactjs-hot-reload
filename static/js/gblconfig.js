@@ -8,6 +8,7 @@ var snowUI = {
 	
 	},
 	materialTheme: 'light',
+	basepath: '/',
 	namespace: '/lodge',
 	usesockets: true,
 	port: 8888,

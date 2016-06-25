@@ -23,7 +23,7 @@ export default class Home extends React.Component {
 	}
 	
 	componentWillReceiveProps(props) {
-	
+	 
 	}
 	
 	componentDidUpdate() {
@@ -45,9 +45,9 @@ export default class Home extends React.Component {
 		
 		return (<div className="col-xs-12" >
 			<Card style={{minHeight: snowUI.contentHeight}} >
-				<CardText>
+				<CardText> 
 					
-					<h2> Home Page </h2>
+					<h2> Welcome home Fred! </h2>
 					
 				</CardText>
 			</Card>

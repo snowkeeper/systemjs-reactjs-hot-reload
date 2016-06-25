@@ -32,6 +32,7 @@ System.config({
     "react-dom": "npm:react-dom@15.1.0",
     "react-router": "npm:react-router@2.4.1",
     "react-tap-event-plugin": "npm:react-tap-event-plugin@1.0.0",
+    "route-parser": "npm:route-parser@0.0.5",
     "socket.io-client": "npm:socket.io-client@1.4.6",
     "socketio/socket.io-client": "github:socketio/socket.io-client@1.4.6",
     "striptags": "npm:striptags@2.1.1",
@@ -630,6 +631,10 @@ System.config({
     "npm:ripemd160@1.0.1": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:route-parser@0.0.5": {
+      "child_process": "github:jspm/nodelibs-child_process@0.1.0",
+      "fs": "github:jspm/nodelibs-fs@0.1.2"
     },
     "npm:sha.js@2.4.5": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",

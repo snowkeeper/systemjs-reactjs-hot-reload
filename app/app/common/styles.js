@@ -47,12 +47,12 @@ export let myStylesGraphite = {
 }
 
 export let myStylesDefault = {
-	primary1Color: '#0C87C1',
-	alternateTextColor: '#fff',
+	//primary1Color: '#0C87C1',
+	//alternateTextColor: '#fff',
 }
 
 export let myStylesDefaultDark = {
-	alternateTextColor: '#fff',
+	//alternateTextColor: '#fff',
 }
 
 export let Styles = {

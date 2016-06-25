@@ -4,8 +4,6 @@ import { Styles } from '../styles';
 
 import debugging from 'debug';
 let	debug = debugging('lodge:app:common:components:confirm');
-
-debug('styles', Styles); 
 	
 let myStyles = {
 	//textColor: Styles.Colors.blue600,

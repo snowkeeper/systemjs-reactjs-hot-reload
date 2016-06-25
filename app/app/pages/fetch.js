@@ -23,12 +23,13 @@ let debug = Debug('lodge:app:pages:fetch');
 export default class Fetch extends React.Component {
 	constructor(props) {
 		super(props);
+		
 		this.displayName = 'Fetch Component';	
+		
 		this.state = Object.assign({
 			ready: true,
 		}, props);
-		
-		debug('Fetch start props', props);
+
 	}
 	componentWillReceiveProps(props) {
 		this.setState(props);
@@ -44,11 +45,14 @@ export default class Fetch extends React.Component {
 	}
 	render() {
 		
+		debug('Fetch state', this.state);
+		debug('Fetch location state', this.state.location.state);
+
 		let Contents = false;
-		if(this.state.fetch) {
-			Contents = FetchComponent(this.state.fetch, this.state.filters, { mode: this.state.mode });
+		
+		if(this.state.location.state.fetch) {
+			Contents = FetchComponent(this.state.location.state.fetch, this.state.location.state.filters, { mode: this.state.location.state.mode });
 		}
-		debug('Fetch render', this.state.fetch, this.state.filters, this.state.mode);
 		
 		return (<div className="col-xs-12" >
 			<Card style={{minHeight: snowUI.contentHeight}} >

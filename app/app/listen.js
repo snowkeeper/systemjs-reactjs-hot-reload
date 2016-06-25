@@ -4,37 +4,17 @@ import Debug from 'debug';
 import Gab from './common/gab';
 import Sockets from './lib/sockets';
 import Path from 'path';
-import { myStylesGraphite, myStylesWhite, myStyles, myStylesLight, myStylesDefault, myStylesDefaultDark, Styles } from './common/styles';
+import Router from './router';
 
 let debug = Debug('lodge:app:listen');
 
-var styles = {
-	'light': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesWhite), snowUI.materialStyle.light),
-	'cream': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesLight), snowUI.materialStyle.cream),
-	'graphite': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesGraphite), snowUI.materialStyle.graphite),
-	'night': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStyles), snowUI.materialStyle.night),
-	'blue': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesDefault), snowUI.materialStyle.blue),
-	'dark': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesDefaultDark), snowUI.materialStyle.dark),
-}
+
 
 export default (Component) => {
 	class Listeners extends React.Component {
 		constructor(props){
 			super(props);
-			this.displayName = 'Listeners';
-			
-			let loc = props.location;
-			let pastState = loc.state;
-						
-			let anchor = location.anchor;
-			let fetch = pastState.fetch || loc.fetch || false;
-			let slug = pastState.slug || loc.slug || false;
-			let filters = pastState.filters || loc.filters || [];
-			let page = pastState.page || loc.pathname || false;
-			
-			if(page.charAt(0) == '/') {
-				page = page.substring(1);
-			}
+			this.displayName = 'Listeners';						
 			
 			this.state = Object.assign({ 
 				connected: false,
@@ -44,37 +24,28 @@ export default (Component) => {
 				newconfirm: {
 					open: false
 				},
-				page,
-				query: loc.query,
-				fetch: fetch,
-				sockets: Sockets,
-				styles,
-				search: loc.search,
-				theme: styles[snowUI.materialTheme] || styles.blue
-				
-			}, snowUI.__state);
+				sockets: Sockets			
+			}, props);
 			
-			debug('listener component', props, 'new state:', this.state);
+			debug('listener component', props)
+			debug('new state:', this.state);
 			
 			snowUI.page = this.state.page;
+			snowUI.__state = { ...this.state }
 			
 			this._update = false;
 			this._limiters = {};
 			this._mounted = false;
 			
-			this.newState = this.newState.bind(this);
+			this.updateState = this.updateState.bind(this);
 		}
 		
 		componentWillReceiveProps(props) {
+						
+			debug('listener componentWillReceiveProps', props);
+			this.setState(props);
+			this._update = true;
 			
-			const State = props.location.state || {};
-			
-			debug('listener component', props, 'new state:', State);
-			
-			if(State.page !== this.state.page) {
-				this.setState(State);
-				this._update = true;
-			}
 		}
 		
 		componentDidUpdate() {
@@ -192,11 +163,11 @@ export default (Component) => {
 			
 		} // end initiate
 		
-		newState(state, cb) {
-			this.setState(state, () => {
+		updateState(stateUpdate, callback) {
+			this.setState(stateUpdate, () => {
 				snowUI.__state = this.state;
-				if(cb) {
-					cb();
+				if(callback) {
+					callback();
 				}
 			});		
 		}
@@ -211,7 +182,7 @@ export default (Component) => {
 		pageResults(data) {
 			snowUI.watingForPage = false;
 			if(!data.success) {
-				this.setState({
+				this.updateState({
 					page: '404',
 					contents: {
 						title: 'Page not found',
@@ -225,7 +196,7 @@ export default (Component) => {
 					},
 				});
 			} else {
-				this.setState({ 
+				this.updateState({ 
 						slug: data.slug,
 						contents: data.results,
 					}, 
@@ -240,12 +211,12 @@ export default (Component) => {
 		
 		render() {
 			debug('render listeners state', this.state);
-			return  <Component { ...this.props } { ...this.state } appState={this.newState} />;
+			return  <Component { ...this.state } appState={this.updateState} />;
 		}
 		
 	}
 
 	Listeners.propTypes = {};
 
-	return Listeners
+	return Router(Listeners)
 }

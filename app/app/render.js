@@ -1,30 +1,40 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Path from 'path';
 import wrapListeners from './listen';
 import Debug from 'debug';
 import Menu from './common/components/menu';
 import Confirm from './common/components/confirm';
-import routes from './routes';
-import {Card, CardText, FontIcon, IconMenu, IconButton, AppBar, RaisedButton, LeftNav, MenuItem, Divider, List, ListItem} from 'material-ui';
-import { Styles } from './common/styles';
-import { withRouter } from 'react-router'
-
+import { Card, CardText, FontIcon, IconMenu, IconButton, AppBar, RaisedButton, LeftNav, MenuItem, Divider, List, ListItem } from 'material-ui';
+import * as Styler from './common/styles';
 
 let debug = Debug('lodge:app:render');
+
+var styles = {
+	'light': Styler.Styles.getMuiTheme(Styler.Styles.LightRawTheme, Styler.myStylesWhite, snowUI.materialStyle.light),
+	'cream': Styler.Styles.getMuiTheme(Styler.Styles.LightRawTheme, Styler.myStylesLight, snowUI.materialStyle.cream),
+	'graphite': Styler.Styles.getMuiTheme(Styler.Styles.DarkRawTheme, Styler.myStylesGraphite, snowUI.materialStyle.graphite),
+	'night': Styler.Styles.getMuiTheme(Styler.Styles.DarkRawTheme, Styler.myStyles, snowUI.materialStyle.night),
+	'blue': Styler.Styles.getMuiTheme(Styler.Styles.LightRawTheme, Styler.myStylesDefault, snowUI.materialStyle.blue),
+	'default': Styler.Styles.getMuiTheme(Styler.Styles.LightRawTheme, snowUI.materialStyle.default),
+	'dark': Styler.Styles.getMuiTheme(Styler.Styles.DarkRawTheme,  snowUI.materialStyle.dark),
+}
 
 class Main extends Component {
 	constructor(props) {
 		// we get props from Listener
 		super(props);
 		
-		this.state = Object.assign({}, props);
+		this.displayName = 'Render';
+		
+		this.state = Object.assign({
+			styles,
+			theme: styles[snowUI.materialTheme] || styles.blue,	
+		}, props);
+		
+		this.state.children = false;
 		
 		this._defaults = {
 			leftNav: false,
-			search: '',
-			slug: '',
-			filters: [],
 			mode: 'cors',
 		}
 		
@@ -33,7 +43,6 @@ class Main extends Component {
 		this.handleLeftNav = this.handleLeftNav.bind(this);
 		this.LeftNavClose = this.LeftNavClose.bind(this);
 		this.goTo = this.goTo.bind(this);
-		this.setAsset = this.setAsset.bind(this);
 		this.appState = this.appState.bind(this);
 		this.answerConfirm = this.answerConfirm.bind(this);
 		this.switchTheme = this.switchTheme.bind(this);
@@ -47,6 +56,7 @@ class Main extends Component {
 	componentWillReceiveProps(props) {
 		// update from listener
 		var p = { ...props };
+		delete p.children;
 		debug('render props', p);
 		this.setState(p);	
 	}
@@ -56,23 +66,23 @@ class Main extends Component {
 	}
 	
 	switchTheme(theme = 'blue', update = true) {
-		let style = this.props.styles[theme];
+		let style = this.state.styles[theme];
 		if(!style) {
-			style = this.props.styles.blue;
+			style = this.state.styles.blue;
 		}
-		if(theme == 'dark') {
+		if( theme == 'dark' ) {
 			snowUI.setTheme('dark-theme');
 			snowUI.shortenTitle = false;
-		} else if(theme == 'graphite') {
+		} else if( theme == 'graphite' ) {
 			snowUI.setTheme('dark-theme graphite');
 			snowUI.shortenTitle = true;
-		} else if(theme == 'night') {
+		} else if( theme == 'night' ) {
 			snowUI.setTheme('dark-theme default');
 			snowUI.shortenTitle = false;
-		} else if(theme == 'cream') {
+		} else if( theme == ('default' || 'cream') ) {
 			snowUI.setTheme('');
 			snowUI.shortenTitle = true;
-		} else if(theme == 'light') {
+		} else if( theme == 'light' ) {
 			snowUI.setTheme('light-theme theme-light ');
 			snowUI.shortenTitle = true;
 		} else {
@@ -100,11 +110,7 @@ class Main extends Component {
 			e.preventDefault();
 		}
 		debug('handleLeftNav', this.state);
-		if(this.state.desktop) {
-			this.appState({desktopNav: !this.state.desktopNav});
-		} else {
-			this.appState({leftNav: !this.state.leftNav});
-		}
+		this.appState({leftNav: !this.state.leftNav});
 	} 
 	
 	LeftNavClose () {
@@ -182,10 +188,6 @@ class Main extends Component {
 		});
 		
 	}
-	 
-	setAsset(asset, callback) {
-		this.appState(asset, callback);
-	}
 	
 	appState(newState, callback) {
 		this.props.appState(newState, callback);
@@ -217,30 +219,28 @@ class Main extends Component {
 	}
 	
 	render() {
-		debug('render state', this.state);
+				
+		debug('render state', this.state, this.props);
 		
 		let title = this.state.page; 
 		
 		let isConnectedIcon = ( this.state.connected === true || !snowUI.usesockets )
 			? 
-				<IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lime500} style={{fontSize:'20px'}}  >speaker_phone</FontIcon></IconButton>
+				<IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" hoverColor={Styler.Styles.Colors.lime500} style={{fontSize:'20px'}}  >speaker_phone</FontIcon></IconButton>
 			:
 				(this.props.sockets.connected.firstRun) 
 				?
-					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px'}} color={Styles.Colors.lime500}  title="Connecting to server for the first time">speaker_phone</FontIcon></IconButton></span>
+					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px'}} color={Styler.Styles.Colors.lime500}  title="Connecting to server for the first time">speaker_phone</FontIcon></IconButton></span>
 				:
-					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px', backgroundColor: Styles.Colors.red900}} color={Styles.Colors.red900}  title="Connection to server lost">cloud_offline</FontIcon></IconButton></span>
+					<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo('status');}} ><FontIcon className="material-icons" style={{fontSize:'20px', backgroundColor: Styler.Styles.Colors.red900}} color={Styler.Styles.Colors.red900}  title="Connection to server lost">cloud_offline</FontIcon></IconButton></span>
 		
 		let appBarRightIcons = (<span>
 						
 			<span style={{ cursor: 'pointer' }}>
 				<IconMenu
-					iconButtonElement={<FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >invert_colors</FontIcon>}
+					iconButtonElement={<FontIcon className="material-icons" hoverColor={Styler.Styles.Colors.lightBlueA700} >invert_colors</FontIcon>}
 					onItemTouchTap={(e, val) => {
 						debug(e, val);
-						if(val.props.value === 'boot') {
-							return location.href = snowUI.path.bootstrap;
-						}
 						this.switchTheme(val.props.value);
 						
 					}}
@@ -256,7 +256,7 @@ class Main extends Component {
 			
 			{isConnectedIcon}
 			
-			<IconButton onClick={this.handleLeftNav} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >menu</FontIcon></IconButton>
+			<IconButton onClick={this.handleLeftNav} ><FontIcon className="material-icons" hoverColor={Styler.Styles.Colors.lightBlueA700} >menu</FontIcon></IconButton>
 			
 			<div style={{width:20,height:20,display:'inline-block'}} />
 		</span>);
@@ -267,13 +267,13 @@ class Main extends Component {
 					title={<div id="appbarTitle" >{title}</div>}
 					iconElementRight={appBarRightIcons}
 					style={{boxShadow: 'none'}}
-					iconElementLeft={<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo(snowUI.homepage);}} ><FontIcon className="material-icons" hoverColor={Styles.Colors.lightBlueA700} >home</FontIcon></IconButton></span>}
+					iconElementLeft={<span><IconButton onClick={(e)=>{e.preventDefault();this.goTo(snowUI.homepage);}} ><FontIcon className="material-icons" hoverColor={Styler.Styles.Colors.lightBlueA700} >home</FontIcon></IconButton></span>}
 				/>
 			</div>
 			<div style={{height:65,width:'100%'}} />
 		</div>);
         
-        //const Page = routes(this.state.page);
+        let theChild = React.cloneElement(this.props.children, Object.assign({ switchTheme: this.switchTheme }, this.state));
         
 		return (<div>
 			{appbar}
@@ -284,7 +284,7 @@ class Main extends Component {
 			<div className="react-hot-reload-container" >
 				<div style={{paddingRight:0, paddingLeft:0}} >
 					<div id="content-fader">
-						{this.props.children && React.cloneElement(this.props.children, Object.assign({ switchTheme: this.switchTheme }, this.props))}
+						{theChild}
 					</div>
 				</div>
 			</div>
@@ -310,6 +310,6 @@ Main.childContextTypes = {
     muiTheme: React.PropTypes.object
 };
 
-export let myComponent =  wrapListeners(withRouter(Main));
+export let myComponent =  wrapListeners(Main);
 
 export default myComponent;
