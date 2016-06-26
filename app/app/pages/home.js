@@ -47,7 +47,7 @@ export default class Home extends React.Component {
 			<Card style={{minHeight: snowUI.contentHeight}} >
 				<CardText>
 					
-					<h2> Home Page </h2>
+					<h2> Welcome home Larry! </h2>
 					
 				</CardText>
 			</Card>

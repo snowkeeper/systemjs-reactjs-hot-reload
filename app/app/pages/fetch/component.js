@@ -2,7 +2,7 @@ import React from 'react';
 import Fetch from './fetch';
 import Debug from 'debug'
 
-let debug = Debug('lodge:app:pages:fetch');
+let debug = Debug('lodge:app:pages:fetch:component');
 
 export default (page, returnType, options) => {
 	class GenericFetch extends React.Component {
@@ -13,7 +13,7 @@ export default (page, returnType, options) => {
 			this.props = props
 		}
 		render() {
-			debug('render fetch component', this.state, this.props, page, returnType);
+			debug('render fetch component', this.state, page);
 			if('function' === typeof this.state.html) {
 				return  (<div> <this.state.html { ...this.props } /> </div>);
 			} else {

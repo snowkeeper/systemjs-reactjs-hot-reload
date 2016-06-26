@@ -4,18 +4,9 @@ import Debug from 'debug';
 import Gab from './common/gab';
 import Sockets from './lib/sockets';
 import Path from 'path';
-import { myStylesGraphite, myStylesWhite, myStyles, myStylesLight, myStylesDefault, myStylesDefaultDark, Styles } from './common/styles';
+import { withRouter } from 'react-router'
 
 let debug = Debug('lodge:app:listen');
-
-var styles = {
-	'light': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesWhite), snowUI.materialStyle.light),
-	'cream': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesLight), snowUI.materialStyle.cream),
-	'graphite': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesGraphite), snowUI.materialStyle.graphite),
-	'night': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStyles), snowUI.materialStyle.night),
-	'blue': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.LightRawTheme), myStylesDefault), snowUI.materialStyle.blue),
-	'dark': Object.assign(Styles.ThemeManager.modifyRawThemePalette(Styles.ThemeManager.getMuiTheme(Styles.DarkRawTheme), myStylesDefaultDark), snowUI.materialStyle.dark),
-}
 
 export default (Component) => {
 	class Listeners extends React.Component {
@@ -25,11 +16,6 @@ export default (Component) => {
 			
 			let loc = props.location;
 			let pastState = loc.state;
-						
-			let anchor = location.anchor;
-			let fetch = pastState.fetch || loc.fetch || false;
-			let slug = pastState.slug || loc.slug || false;
-			let filters = pastState.filters || loc.filters || [];
 			let page = pastState.page || loc.pathname || false;
 			
 			if(page.charAt(0) == '/') {
@@ -38,21 +24,11 @@ export default (Component) => {
 			
 			this.state = Object.assign({ 
 				connected: false,
-				currentTheme: snowUI.materialTheme,
-				leftNav: false,
-				newalert: {},
-				newconfirm: {
-					open: false
-				},
 				page,
-				query: loc.query,
-				fetch: fetch,
-				sockets: Sockets,
-				styles,
-				search: loc.search,
-				theme: styles[snowUI.materialTheme] || styles.blue
-				
-			}, snowUI.__state);
+				sockets: Sockets,				
+			}, props);
+			
+			snowUI.__state = this.state;
 			
 			debug('listener component', props, 'new state:', this.state);
 			
@@ -69,10 +45,11 @@ export default (Component) => {
 			
 			const State = props.location.state || {};
 			
-			debug('listener component', props, 'new state:', State);
+			debug('Listener received props', props, 'current state', this.state);
 			
 			if(State.page !== this.state.page) {
-				this.setState(State);
+				debug('Listener update state', State);
+				this.setState(Object.assign(State, props));
 				this._update = true;
 			}
 		}
@@ -247,5 +224,5 @@ export default (Component) => {
 
 	Listeners.propTypes = {};
 
-	return Listeners
+	return withRouter(Listeners)
 }

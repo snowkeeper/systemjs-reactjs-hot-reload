@@ -5,9 +5,13 @@
  * */
 var snowUI = {
 	materialStyle: {
-	
+		blue: {
+			menuItem: {
+				textColor: '#fff'
+			}
+		}
 	},
-	materialTheme: 'light',
+	materialTheme: 'blue',
 	namespace: '/lodge',
 	usesockets: true,
 	port: 8888,

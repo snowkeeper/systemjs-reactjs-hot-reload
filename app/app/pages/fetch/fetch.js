@@ -126,7 +126,7 @@ export default (page, Component, dataType, options) => {
 					case 'wikiindexpage':
 						let wikiregx = /\[\[(.*?]*)\]\]/
 						let link
-						let uri = (options.path || '/docs/learn/kb') + '/'
+						let uri = (options.markdownBasePath || '/markdown') + '/'
 						while (wikiregx.test(data)) {
 							let match = data.match(wikiregx);
 							if(match) {

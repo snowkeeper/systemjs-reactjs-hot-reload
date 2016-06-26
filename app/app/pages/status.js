@@ -157,9 +157,15 @@ export default class Status extends React.Component {
 				<GridList
 					cellHeight={100}
 					style={{width:'100%'}}
-					cols={6}
+					cols={7}
 					padding={0}
 				>
+					<GridTile 
+						key="MateriallDdefTheme"
+						title={"mui default"}
+						onClick={e => this.props.switchTheme('default')}
+						style={{backgroundColor: '#fff', cursor: 'pointer'}}
+					/>
 					<GridTile 
 						key="MaterialL7ightTheme"
 						title={"Cream"}

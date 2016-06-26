@@ -42,8 +42,7 @@ export default class Menu extends React.Component {
 				
         let LeftDrawer = (
 			<Drawer 
-				docked={false}
-				desktop={true}
+				docked={this.props.docked}
 				open={this.props.leftNav}
 				openSecondary={this.props.secondary}
 				width={255}
@@ -65,19 +64,19 @@ export default class Menu extends React.Component {
 							page: 'home',
 						});
 					}}>Home</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'status',
 						});
-					}}>Status</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					}} href="/status">Status</MenuItem>
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'lost',
 						});
 					}}>Lost</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							fetch: 'help',
@@ -88,23 +87,25 @@ export default class Menu extends React.Component {
 							}
 						});
 					}}>Malformed</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'page',
 							slug: 'help'
 						});
 					}}>Local Page from JSON</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'fetch',
-							fetch: 'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API',
-							filters: ['body','noscript']
+							query: {
+								fetch: 'https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API',
+								filters: ['body','noscript']
+							}
 						});
 					}}>Fetch</MenuItem>
 					
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'fetch',
@@ -112,7 +113,7 @@ export default class Menu extends React.Component {
 							filters: ['body','noscript']
 						});
 					}}>Fail CORS</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'json',
@@ -120,20 +121,25 @@ export default class Menu extends React.Component {
 							filters: ['json','code']
 						});
 					}}>Load JSON</MenuItem>
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
-							page: 'markdown',
-							fetch: 'https://raw.githubusercontent.com/snowkeeper/systemjs-reactjs-hot-reload/master/README.md',
-							filters: ['markdown','wikiindexpage']
+							path: '/markdown',
+							page: 'Markdown',
+							markdownBasePath: 'https://raw.githubusercontent.com/wiki/snowkeeper/keystone',
+							query: {
+								fetch: 'https://raw.githubusercontent.com/wiki/facebook/react/Complementary-Tools.md',
+								filters: ['markdown','wikiindexpage'],
+								markdownBasePath: 'https://raw.githubusercontent.com/wiki/facebook/react'
+							}
 						});
-					}}>Load Markdown</MenuItem>
+					}} href="/markdown/?fetch=https://raw.githubusercontent.com/wiki/facebook/react/Complementary-Tools.md&filter1=markdown&filter2=wikiindexpage&markdownBasePath=https://raw.githubusercontent.com/wiki/facebook/react">Load Markdown</MenuItem>
 					
 				</div>
 			</Drawer>
 		);
 		
-		if(this.props.docked) {
+		if(this.props.drawer) {
 			return (LeftDrawer);
 		} else {
 			return (<div>{menu}</div>);

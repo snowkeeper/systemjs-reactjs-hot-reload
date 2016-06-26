@@ -45,10 +45,11 @@ export default class Fetch extends React.Component {
 	render() {
 		
 		let Contents = false;
-		if(this.state.fetch) {
-			Contents = FetchComponent(this.state.fetch, this.state.filters, { mode: this.state.mode });
+		let config = this.props.location.state;
+		if(config.query.fetch) {
+			Contents = FetchComponent(config.query.fetch, config.query.filters, { ...config, ...config.query });
 		}
-		debug('Fetch render', this.state.fetch, this.state.filters, this.state.mode);
+		debug('Fetch render', config);
 		
 		return (<div className="col-xs-12" >
 			<Card style={{minHeight: snowUI.contentHeight}} >
