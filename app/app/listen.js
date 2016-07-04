@@ -15,7 +15,7 @@ export default (Component) => {
 			this.displayName = 'Listeners';
 			
 			let loc = props.location;
-			let pastState = loc.state;
+			let pastState = loc.state || {};
 			let page = pastState.page || loc.pathname || false;
 			
 			if(page.charAt(0) == '/') {

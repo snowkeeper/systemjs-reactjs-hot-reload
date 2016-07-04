@@ -61,6 +61,7 @@ export default class Menu extends React.Component {
 							page: 'home',
 						});
 					}} onTouchTap={this.props.handleLeftNav} >Home</MenuItem>
+					<MenuItem href="/lodge" target="_blank">Lodge</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
