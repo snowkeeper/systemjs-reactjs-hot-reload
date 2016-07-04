@@ -45,16 +45,19 @@ export default class Fetch extends React.Component {
 	render() {
 		
 		let Contents = false;
+		let NODATA = (<p><h2>Fetch encountered an error</h2></p>); 
 		let config = this.props.location.state;
-		if(config.query.fetch) {
-			Contents = FetchComponent(config.query.fetch, config.query.filters, { ...config, ...config.query });
-		}
+		
 		debug('Fetch render', config);
+		
+		if(config.query && config.query.fetch) {
+			Contents = FetchComponent(config.query.fetch, config.query.filters, { ...config, ...config.query });
+		}		
 		
 		return (<div className="col-xs-12" >
 			<Card style={{minHeight: snowUI.contentHeight}} >
 				<CardText>
-					{Contents ? <Contents /> : <span />}
+					{Contents ? <Contents /> : NODATA}
 				</CardText>
 			</Card>
 		</div>);

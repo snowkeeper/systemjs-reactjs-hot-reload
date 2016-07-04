@@ -49,7 +49,7 @@ export default (Component) => {
 			
 			if(State.page !== this.state.page) {
 				debug('Listener update state', State);
-				this.setState(Object.assign(State, props));
+				this.setState(Object.assign({ ...State }, props));
 				this._update = true;
 			}
 		}

@@ -323,7 +323,7 @@ class Render extends Component {
 	
 	menu() {
 		return (
-			<Menu docked={false} drawer={true} secondary={true} searchToggle={this.searchToggle}  goTo={this.goTo} handleLeftNav={this.handleLeftNav} { ...this.state } />
+			<Menu docked={false} drawer={true} secondary={true} searchToggle={this.searchToggle}  goTo={this.goTo} handleLeftNav={this.LeftNavClose} { ...this.state } />
 		);
 	}
 	

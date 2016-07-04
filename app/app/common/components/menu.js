@@ -48,9 +48,6 @@ export default class Menu extends React.Component {
 				width={255}
 				onRequestChange={open => {
 					debug('request change', open, this.props);
-					this.props.handleLeftNav({
-						leftNav: open
-					})
 				}}
 			>
 				<div className="menu" style={{
@@ -58,12 +55,12 @@ export default class Menu extends React.Component {
 					width: '100%',
 					overflow: 'auto',
 				}} >
-					<MenuItem onTouchTap={(e) => {
+					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'home',
 						});
-					}}>Home</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Home</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
@@ -75,7 +72,7 @@ export default class Menu extends React.Component {
 						this.props.goTo({
 							page: 'lost',
 						});
-					}}>Lost</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Lost</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
@@ -86,14 +83,14 @@ export default class Menu extends React.Component {
 								icon: 'help'
 							}
 						});
-					}}>Malformed</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Malformed</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'page',
 							slug: 'help'
 						});
-					}}>Local Page from JSON</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Local Page from JSON</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
@@ -103,24 +100,28 @@ export default class Menu extends React.Component {
 								filters: ['body','noscript']
 							}
 						});
-					}}>Fetch</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Fetch</MenuItem>
 					
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'fetch',
-							fetch: 'http://google.com',
-							filters: ['body','noscript']
+							query: {
+								fetch: 'http://google.com',
+								filters: ['body','noscript']
+							}
 						});
-					}}>Fail CORS</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Fail CORS</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
 							page: 'json',
-							fetch: 'https://www.reddit.com/search.json?q=systemjs+react',
-							filters: ['json','code']
+							query: {
+								fetch: 'https://www.reddit.com/search.json?q=systemjs+react',
+								filters: ['json','code']
+							}
 						});
-					}}>Load JSON</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav} >Load JSON</MenuItem>
 					<MenuItem onClick={(e) => {
 						e.preventDefault(e);
 						this.props.goTo({
@@ -133,7 +134,7 @@ export default class Menu extends React.Component {
 								markdownBasePath: 'https://raw.githubusercontent.com/wiki/facebook/react'
 							}
 						});
-					}} href="/markdown/?fetch=https://raw.githubusercontent.com/wiki/facebook/react/Complementary-Tools.md&filter1=markdown&filter2=wikiindexpage&markdownBasePath=https://raw.githubusercontent.com/wiki/facebook/react">Load Markdown</MenuItem>
+					}} onTouchTap={this.props.handleLeftNav}  href="/markdown/?fetch=https://raw.githubusercontent.com/wiki/facebook/react/Complementary-Tools.md&filter1=markdown&filter2=wikiindexpage&markdownBasePath=https://raw.githubusercontent.com/wiki/facebook/react">Load Markdown</MenuItem>
 					
 				</div>
 			</Drawer>
